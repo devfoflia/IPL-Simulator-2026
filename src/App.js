@@ -11,6 +11,8 @@ const toDecimal = (ov) => {
   const str = (ov || "0").toString().trim();
   if (!str.includes(".")) return parseFloat(str) || 0;
   let [overs, balls] = str.split(".").map(Number);
+  
+  // If user enters .6, .7, .8 etc., convert them to full overs
   if (balls >= 6) {
     overs += Math.floor(balls / 6);
     balls = balls % 6;
@@ -41,7 +43,7 @@ const initialData = {
     { id: 59, home: "LSG", away: "CSK", hR: "", hO: "20", aR: "", aO: "20", win: "", status: "upcoming" },
     { id: 60, home: "KKR", away: "GT", hR: "", hO: "20", aR: "", aO: "20", win: "", status: "upcoming" },
     { id: 61, home: "PBKS", away: "RCB", hR: "", hO: "20", aR: "", aO: "20", win: "", status: "upcoming" },
-    { id: 62, home: "DC", home: "DC", away: "RR", hR: "", hO: "20", aR: "", aO: "20", win: "", status: "upcoming" },
+    { id: 62, home: "DC", away: "RR", hR: "", hO: "20", aR: "", aO: "20", win: "", status: "upcoming" },
     { id: 63, home: "CSK", away: "SRH", hR: "", hO: "20", aR: "", aO: "20", win: "", status: "upcoming" },
     { id: 64, home: "RR", away: "LSG", hR: "", hO: "20", aR: "", aO: "20", win: "", status: "upcoming" },
     { id: 65, home: "KKR", away: "MI", hR: "", hO: "20", aR: "", aO: "20", win: "", status: "upcoming" },
@@ -100,18 +102,11 @@ export default function App() {
 
   return (
     <div style={{ padding: "15px", background: "#f1f5f9", minHeight: "100vh", fontFamily: "sans-serif" }}>
-      <h2 style={{ textAlign: "center", color: "#1e3a8a", marginBottom: "5px" }}>IPL 2026 Simulator & Predictor</h2>
-      
-      {/* INSTRUCTION BOX */}
-      <div style={{ maxWidth: "800px", margin: "10px auto 25px", background: "#dbeafe", padding: "12px", borderRadius: "8px", border: "1px solid #3b82f6", fontSize: "13px", color: "#1e40af" }}>
-        <strong>Ref's Guide:</strong> 
-        <ul style={{ margin: "5px 0 0 20px", padding: 0 }}>
-          <li>If a team is <strong>All Out</strong>, manually change their Overs to <strong>20</strong> for correct NRR.</li>
-          <li>For successful chases, use the <strong>actual overs</strong> taken (e.g. 18.2).</li>
-          <li>The math fixes typos: 19.8 will automatically be treated as 20.2.</li>
-        </ul>
-      </div>
+      <h2 style={{ textAlign: "center", color: "#1e3a8a", marginBottom: "25px" }}>
+        IPL 2026 Simulator & Predictor
+      </h2>
 
+      {/* 1. STANDINGS TABLE */}
       <div style={{ maxWidth: "800px", margin: "auto", background: "white", borderRadius: "12px", overflow: "hidden", boxShadow: "0 10px 15px -3px rgba(0,0,0,0.1)" }}>
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
@@ -135,6 +130,17 @@ export default function App() {
         </table>
       </div>
 
+      {/* 2. INSTRUCTION BOX */}
+      <div style={{ maxWidth: "800px", margin: "25px auto", background: "#dbeafe", padding: "15px", borderRadius: "8px", border: "1px solid #3b82f6", fontSize: "14px", color: "#1e40af" }}>
+        <strong>Ref's Guide:</strong> 
+        <ul style={{ margin: "8px 0 0 20px", padding: 0 }}>
+          <li><strong>All Out?</strong> Manually change that team's Overs to <strong>20</strong>.</li>
+          <li><strong>Chase Win?</strong> Use the <strong>actual overs</strong> taken (e.g., 18.2).</li>
+          <li><strong>Typo Fix:</strong> The math converts 19.8 into 20.2 automatically.</li>
+        </ul>
+      </div>
+
+      {/* 3. MATCH CARDS */}
       <div style={{ maxWidth: "850px", margin: "35px auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "20px" }}>
         {matches.filter(m => m.status === "upcoming").map((m) => (
           <div key={m.id} style={{ background: "white", padding: "18px", borderRadius: "12px", border: "1px solid #e2e8f0", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
@@ -161,7 +167,7 @@ export default function App() {
           </div>
         ))}
       </div>
-      <button onClick={() => setMatches(initialData.matches)} style={{ width: "100%", maxWidth: "800px", margin: "20px auto", display: "block", padding: "15px", background: "#ef4444", color: "white", borderRadius: "10px", border: "none", fontWeight: "bold", cursor: "pointer" }}>RESET PREDICTIONS</button>
+      <button onClick={() => setMatches(initialData.matches)} style={{ width: "100%", maxWidth: "800px", margin: "20px auto", display: "block", padding: "15px", background: "#ef4444", color: "white", borderRadius: "10px", border: "none", fontWeight: "bold", cursor: "pointer", fontSize: "16px" }}>RESET PREDICTIONS</button>
     </div>
   );
 }
