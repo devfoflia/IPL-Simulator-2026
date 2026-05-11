@@ -6,13 +6,10 @@ const TEAM_COLORS = {
   MI: "#004BA0", LSG: "#0057E2",
 };
 
-// CRICKET-SMART OVER CONVERTER: Handles 19.3 as 19.5 and fixes typos like 19.8
 const toDecimal = (ov) => {
   const str = (ov || "0").toString().trim();
   if (!str.includes(".")) return parseFloat(str) || 0;
   let [overs, balls] = str.split(".").map(Number);
-  
-  // If user enters .6, .7, .8 etc., convert them to full overs
   if (balls >= 6) {
     overs += Math.floor(balls / 6);
     balls = balls % 6;
@@ -22,22 +19,18 @@ const toDecimal = (ov) => {
 
 const initialData = {
   standings: [
+    { team: "RCB", p: 11, w: 7, l: 4, pts: 14, scored: 2150, faced: 205.0, conceded: 1980, bowled: 212.0 },
     { team: "SRH", p: 11, w: 7, l: 4, pts: 14, scored: 2100, faced: 210.0, conceded: 1950, bowled: 215.0 },
     { team: "GT", p: 11, w: 7, l: 4, pts: 14, scored: 1980, faced: 212.4, conceded: 1900, bowled: 218.2 },
     { team: "PBKS", p: 10, w: 6, l: 3, pts: 13, scored: 1850, faced: 195.0, conceded: 1740, bowled: 195.0 },
-    { team: "RCB", p: 10, w: 6, l: 4, pts: 12, scored: 1950, faced: 198.0, conceded: 1720, bowled: 200.0 },
+    { team: "CSK", p: 11, w: 6, l: 5, pts: 12, scored: 1950, faced: 218.0, conceded: 1920, bowled: 219.0 },
     { team: "RR", p: 11, w: 6, l: 5, pts: 12, scored: 2040, faced: 216.3, conceded: 2020, bowled: 220.0 },
-    { team: "CSK", p: 10, w: 5, l: 5, pts: 10, scored: 1780, faced: 198.0, conceded: 1750, bowled: 200.0 },
     { team: "KKR", p: 10, w: 4, l: 5, pts: 9, scored: 1650, faced: 192.1, conceded: 1680, bowled: 190.0 },
     { team: "DC", p: 11, w: 4, l: 7, pts: 8, scored: 1800, faced: 218.0, conceded: 2050, bowled: 215.4 },
-    { team: "MI", p: 10, w: 3, l: 7, pts: 6, scored: 1720, faced: 200.0, conceded: 1850, bowled: 200.0 },
-    { team: "LSG", p: 10, w: 3, l: 7, pts: 6, scored: 1680, faced: 200.0, conceded: 1860, bowled: 200.0 },
+    { team: "MI", p: 11, w: 3, l: 8, pts: 6, scored: 1890, faced: 220.0, conceded: 2040, bowled: 220.0 },
+    { team: "LSG", p: 11, w: 3, l: 8, pts: 6, scored: 1850, faced: 220.0, conceded: 2050, bowled: 220.0 },
   ],
   matches: [
-    { id: 53, home: "CSK", away: "LSG", hR: "", hO: "20", aR: "", aO: "20", win: "", status: "upcoming" },
-    { id: 54, home: "RCB", away: "MI", hR: "", hO: "20", aR: "", aO: "20", win: "", status: "upcoming" },
-    { id: 55, home: "PBKS", away: "DC", hR: "", hO: "20", aR: "", aO: "20", win: "", status: "upcoming" },
-    { id: 56, home: "GT", away: "SRH", hR: "", hO: "20", aR: "", aO: "20", win: "", status: "upcoming" },
     { id: 57, home: "RCB", away: "KKR", hR: "", hO: "20", aR: "", aO: "20", win: "", status: "upcoming" },
     { id: 58, home: "PBKS", away: "MI", hR: "", hO: "20", aR: "", aO: "20", win: "", status: "upcoming" },
     { id: 59, home: "LSG", away: "CSK", hR: "", hO: "20", aR: "", aO: "20", win: "", status: "upcoming" },
@@ -62,11 +55,14 @@ export default function App() {
     setMatches((prev) => prev.map((m) => {
       if (m.id === id) {
         const next = { ...m, [field]: value };
-        const hR = parseInt(next.hR);
-        const aR = parseInt(next.aR);
-        if (!isNaN(hR) && !isNaN(aR)) {
-          if (hR > aR) next.win = next.home;
-          else if (aR > hR) next.win = next.away;
+        if (field === "hR" || field === "aR") {
+            const hR = parseInt(next.hR);
+            const aR = parseInt(next.aR);
+            if (!isNaN(hR) && !isNaN(aR)) {
+              if (hR > aR) next.win = next.home;
+              else if (aR > hR) next.win = next.away;
+              else next.win = ""; // Reset if equal unless NR is selected
+            }
         }
         return next;
       }
@@ -76,22 +72,35 @@ export default function App() {
 
   const calculateTable = () => {
     let table = JSON.parse(JSON.stringify(initialData.standings));
-    matches.filter(m => m.status === "upcoming").forEach((m) => {
-      if (!m.win) return;
+    matches.forEach((m) => {
+      if (!m.win && m.win !== "NR") return;
+      
       const h = table.find((t) => t.team === m.home);
       const a = table.find((t) => t.team === m.away);
-      h.p += 1; a.p += 1;
-      if (m.win === m.home) { h.pts += 2; h.w += 1; a.l += 1; }
-      else { a.pts += 2; a.w += 1; h.l += 1; }
-      const hr = parseInt(m.hR); const ar = parseInt(m.aR);
-      if (!isNaN(hr) && !isNaN(ar)) {
-        if (hr === ar) return;
-        h.scored += hr; h.conceded += ar;
-        a.scored += ar; a.conceded += hr;
-        h.faced += toDecimal(m.hO); h.bowled += toDecimal(m.aO);
-        a.faced += toDecimal(m.aO); a.bowled += toDecimal(m.hO);
+      
+      h.p += 1;
+      a.p += 1;
+
+      if (m.win === "NR") {
+        h.pts += 1;
+        a.pts += 1;
+      } else {
+        if (m.win === m.home) {
+          h.pts += 2; h.w += 1; a.l += 1;
+        } else {
+          a.pts += 2; a.w += 1; h.l += 1;
+        }
+        const hr = parseInt(m.hR);
+        const ar = parseInt(m.aR);
+        if (!isNaN(hr) && !isNaN(ar)) {
+          h.scored += hr; h.conceded += ar;
+          a.scored += ar; a.conceded += hr;
+          h.faced += toDecimal(m.hO); h.bowled += toDecimal(m.aO);
+          a.faced += toDecimal(m.aO); a.bowled += toDecimal(m.hO);
+        }
       }
     });
+
     return table.map((t) => {
       const nrr = (t.scored / t.faced) - (t.conceded / t.bowled);
       return { ...t, nrrDisplay: nrr.toFixed(3) };
@@ -102,11 +111,8 @@ export default function App() {
 
   return (
     <div style={{ padding: "15px", background: "#f1f5f9", minHeight: "100vh", fontFamily: "sans-serif" }}>
-      <h2 style={{ textAlign: "center", color: "#1e3a8a", marginBottom: "25px" }}>
-        IPL 2026 Simulator & Predictor
-      </h2>
+      <h2 style={{ textAlign: "center", color: "#1e3a8a", marginBottom: "25px" }}>IPL 2026 Simulator & Predictor</h2>
 
-      {/* 1. STANDINGS TABLE */}
       <div style={{ maxWidth: "800px", margin: "auto", background: "white", borderRadius: "12px", overflow: "hidden", boxShadow: "0 10px 15px -3px rgba(0,0,0,0.1)" }}>
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
@@ -130,22 +136,21 @@ export default function App() {
         </table>
       </div>
 
-      {/* 2. INSTRUCTION BOX */}
       <div style={{ maxWidth: "800px", margin: "25px auto", background: "#dbeafe", padding: "15px", borderRadius: "8px", border: "1px solid #3b82f6", fontSize: "14px", color: "#1e40af" }}>
         <strong>Ref's Guide:</strong> 
         <ul style={{ margin: "8px 0 0 20px", padding: 0 }}>
           <li><strong>All Out?</strong> Manually change that team's Overs to <strong>20</strong>.</li>
-          <li><strong>Chase Win?</strong> Use the <strong>actual overs</strong> taken (e.g., 18.2).</li>
-          <li><strong>Typo Fix:</strong> The math converts 19.8 into 20.2 automatically.</li>
+          <li><strong>Washout?</strong> Click the <strong>"NO RESULT"</strong> button for 1 point each.</li>
+          <li><strong>Fast Chase?</strong> Use actual overs (e.g., 14.3).</li>
         </ul>
       </div>
 
-      {/* 3. MATCH CARDS */}
       <div style={{ maxWidth: "850px", margin: "35px auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "20px" }}>
-        {matches.filter(m => m.status === "upcoming").map((m) => (
+        {matches.map((m) => (
           <div key={m.id} style={{ background: "white", padding: "18px", borderRadius: "12px", border: "1px solid #e2e8f0", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", color: "#64748b", marginBottom: "12px" }}>
               <span style={{ fontWeight: "bold" }}>MATCH {m.id}</span>
+              {m.win === "NR" && <span style={{ color: "#2563eb", fontWeight: "bold" }}>WASHOUT (1 PT EACH)</span>}
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", gap: "15px" }}>
               <div style={{ flex: 1 }}>
@@ -155,7 +160,15 @@ export default function App() {
                   <input style={{ width: "50%", padding: "6px", borderRadius: "4px", border: "1px solid #cbd5e1" }} type="text" placeholder="Overs" value={m.hO} onChange={(e) => updateMatch(m.id, "hO", e.target.value)} />
                 </div>
               </div>
-              <div style={{ alignSelf: "center", fontWeight: "bold", color: "#94a3b8" }}>VS</div>
+              <div style={{ alignSelf: "center", textAlign: "center" }}>
+                <div style={{ fontWeight: "bold", color: "#94a3b8", marginBottom: "5px" }}>VS</div>
+                <button 
+                  onClick={() => updateMatch(m.id, "win", m.win === "NR" ? "" : "NR")}
+                  style={{ fontSize: "10px", padding: "4px 8px", borderRadius: "4px", border: "1px solid #3b82f6", background: m.win === "NR" ? "#3b82f6" : "white", color: m.win === "NR" ? "white" : "#3b82f6", cursor: "pointer", fontWeight: "bold" }}
+                >
+                  NO RESULT
+                </button>
+              </div>
               <div style={{ flex: 1 }}>
                 <button onClick={() => updateMatch(m.id, "win", m.away)} style={{ width: "100%", padding: "10px", borderRadius: "6px", border: "1px solid #cbd5e1", background: m.win === m.away ? TEAM_COLORS[m.away] : "white", color: m.win === m.away ? "white" : "black", fontWeight: "bold", cursor: "pointer" }}>{m.away}</button>
                 <div style={{ display: "flex", gap: "4px", marginTop: "8px" }}>
