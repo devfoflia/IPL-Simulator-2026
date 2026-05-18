@@ -15,28 +15,21 @@ const toDecimal = (ov) => {
 };
 
 const initialData = {
-  // DATA SOURCE: OFFICIAL MAY 11 STANDINGS (FOR & AGAINST)
+  // LATEST STATS CALIBRATED TO YOUR NEW ACCURATE SEASON DATA
   standings: [
-    { team: "RCB", p: 11, w: 7, l: 4, pts: 14, scored: 2026, faced: 195.1, conceded: 1973, bowled: 212.4 },
-    { team: "SRH", p: 11, w: 7, l: 4, pts: 14, scored: 2332, faced: 217.1, conceded: 2127, bowled: 212.4 },
-    { team: "GT", p: 11, w: 7, l: 4, pts: 14, scored: 1943, faced: 210.4, conceded: 1961, bowled: 218.0 },
-    { team: "PBKS", p: 10, w: 6, l: 3, pts: 13, scored: 1902, faced: 172.0, conceded: 1879, bowled: 179.1 },
-    { team: "CSK", p: 11, w: 6, l: 5, pts: 12, scored: 2023, faced: 215.0, conceded: 1914, bowled: 207.3 },
-    { team: "RR", p: 11, w: 6, l: 5, pts: 12, scored: 1996, faced: 200.3, conceded: 2057, bowled: 208.2 },
-    { team: "KKR", p: 10, w: 4, l: 5, pts: 9, scored: 1534, faced: 172.2, conceded: 1622, bowled: 178.5 },
-    { team: "DC", p: 11, w: 4, l: 7, pts: 8, scored: 1943, faced: 214.2, conceded: 2015, bowled: 197.1 },
-    { team: "MI", p: 11, w: 3, l: 8, pts: 6, scored: 2026, faced: 208.5, conceded: 2083, bowled: 202.3 },
-    { team: "LSG", p: 11, w: 3, l: 8, pts: 6, scored: 1910, faced: 218.5, conceded: 2004, bowled: 208.0 },
+    { team: "RCB", p: 13, w: 9, l: 4, pts: 18, scored: 2442, faced: 234.2, conceded: 2364, bowled: 252.4 },
+    { team: "GT", p: 13, w: 8, l: 5, pts: 16, scored: 2329, faced: 250.4, conceded: 2294, bowled: 258.0 },
+    { team: "SRH", p: 12, w: 7, l: 5, pts: 14, scored: 2418, faced: 237.1, conceded: 2295, bowled: 232.4 },
+    { team: "PBKS", p: 13, w: 6, l: 6, pts: 13, scored: 2511, faced: 232.0, conceded: 2522, bowled: 238.0 },
+    { team: "CSK", p: 12, w: 6, l: 6, pts: 12, scored: 2210, faced: 235.0, conceded: 2102, bowled: 224.1 },
+    { team: "RR", p: 12, w: 6, l: 6, pts: 12, scored: 2189, faced: 220.3, conceded: 2254, bowled: 227.4 },
+    { team: "DC", p: 13, w: 6, l: 7, pts: 12, scored: 2356, faced: 252.4, conceded: 2418, bowled: 237.1 },
+    { team: "KKR", p: 12, w: 5, l: 6, pts: 11, scored: 1973, faced: 212.2, conceded: 2034, bowled: 218.0 },
+    { team: "MI", p: 12, w: 4, l: 8, pts: 8, scored: 2231, faced: 228.4, conceded: 2283, bowled: 222.3 },
+    { team: "LSG", p: 12, w: 4, l: 8, pts: 8, scored: 2098, faced: 235.3, conceded: 2191, bowled: 228.0 },
   ],
   matches: [
-    { id: 55, home: "PBKS", away: "DC", hR: "", hO: "20", aR: "", aO: "20", win: "", status: "upcoming" },
-    { id: 56, home: "GT", away: "SRH", hR: "", hO: "20", aR: "", aO: "20", win: "", status: "upcoming" },
-    { id: 57, home: "RCB", away: "KKR", hR: "", hO: "20", aR: "", aO: "20", win: "", status: "upcoming" },
-    { id: 58, home: "PBKS", away: "MI", hR: "", hO: "20", aR: "", aO: "20", win: "", status: "upcoming" },
-    { id: 59, home: "LSG", away: "CSK", hR: "", hO: "20", aR: "", aO: "20", win: "", status: "upcoming" },
-    { id: 60, home: "KKR", away: "GT", hR: "", hO: "20", aR: "", aO: "20", win: "", status: "upcoming" },
-    { id: 61, home: "PBKS", away: "RCB", hR: "", hO: "20", aR: "", aO: "20", win: "", status: "upcoming" },
-    { id: 62, home: "DC", away: "RR", hR: "", hO: "20", aR: "", aO: "20", win: "", status: "upcoming" },
+    // ONLY THE REMAINING UNPLAYED fixtures
     { id: 63, home: "CSK", away: "SRH", hR: "", hO: "20", aR: "", aO: "20", win: "", status: "upcoming" },
     { id: 64, home: "RR", away: "LSG", hR: "", hO: "20", aR: "", aO: "20", win: "", status: "upcoming" },
     { id: 65, home: "KKR", away: "MI", hR: "", hO: "20", aR: "", aO: "20", win: "", status: "upcoming" },
@@ -128,9 +121,9 @@ export default function App() {
       <div style={{ maxWidth: "800px", margin: "25px auto", background: "#dbeafe", padding: "15px", borderRadius: "8px", border: "1px solid #3b82f6", fontSize: "14px", color: "#1e40af" }}>
         <strong>Ref's Guide:</strong> 
         <ul style={{ margin: "8px 0 0 20px", padding: 0 }}>
-          <li><strong>Data Sync:</strong> Points table calibrated exactly to the 2026 Season data provided.</li>
-          <li><strong>All Out?</strong> Manually use 20.0 overs for that team.</li>
+          <li><strong>All Out?</strong> Use 20.0 overs for that team.</li>
           <li><strong>Washout?</strong> Hit "NO RESULT" for 1 point each.</li>
+          <li>The math accurately computes the final qualification permutations.</li>
         </ul>
       </div>
 
